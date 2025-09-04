@@ -1,0 +1,16 @@
+const body = document.querySelector('body')
+const footer = document.querySelector('.footer')
+const container = document.querySelector('.container')
+const mainBody = document.querySelector('.mainBody')
+const title = document.querySelector('.title')
+const rows = Array.from(document.querySelectorAll('.row'))
+
+//container.classList.add('')
+title.classList.add('text-center')
+mainBody.classList.add('flex-col')
+footer.classList.add('text-center')
+body.classList.add('flex-col')
+rows.map(row => row.classList.add('flex-row'))
+
+const numPad = createNumpad(rows[1])
+const operators = createOperators(rows[1])
