@@ -65,21 +65,49 @@ function createOperators(numpadRow) {
 function getButton() {
     return document.createElement('button')
 }
-function updateScreen(str) {
+function operate(num1, op, num2) {
+    let result;
+    num1 = parseInt(num1)
+    num2 = parseInt(num2)
+
+    switch (op) {
+        case '+': result = add(num1, num2)
+            break;
+
+        case '-': result = subtract(num1, num2)
+            break;
+
+        case 'x': result = multiply(num1, num2)
+            break;
+
+        case '÷': result = divide(num1, num2)
+    }
+    return result.toString()
+}
+function isSecondOperator(str, text) {
+    
+}
+function input(str) {
     let screenText = screen.firstElementChild
 
-    if (!(['Clear', 'Back'].includes(str)) && screenText.textContent.length < 11) {
+    if (!(['Clear', 'Back', '='].includes(str)) && screenText.textContent.length < 11) {
         screenText.textContent += str
     }
     if (str === 'Back') {
         screenText.textContent = screenText.textContent.slice(0, -1)
     }
     if (str === 'Clear') {
-        screenText.textContent = ''
+        screenText.textContent = '';
+    }
+    if (str === '=' || isSecondOperator(str, screenText.textContent)) {
+        let op = Array.from(screenText.textContent).find(op => ['+', '-', 'x', '÷'].includes(op))
+        let nums = screenText.textContent.split(op)
+        console.log(op, nums[0], nums[1])
+        screenText.textContent = operate(nums[0], op, nums[1])
     }
 }
 function clickHandler(str) {
-    updateScreen(str)
+    input(str)
 }
 function attachListeners(btnRow1, numPad, operators) {
     btnRow1.childNodes.forEach(btn => {
@@ -106,7 +134,7 @@ const divide = (num1, num2) => {
         alert('Error, division by zero')
         return 0
     }
-    return num1 / num2
+    return parseInt(num1 / num2)
 }
 function main() {
     const body = document.querySelector('body')
