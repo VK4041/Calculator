@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+25&display=swap');
+
 body,
 html {
     margin: 0;
@@ -20,12 +22,10 @@ body {
     border: 5px solid rgba(0, 0, 0, 0.3);
     border-radius: 2%;
     padding: 1rem;
-    flex: 1
 }
 
 .mainBody {
-    padding: 0 20rem 2rem;
-    flex: 1
+    margin: 1rem 30%;
 }
 
 .text-center {
@@ -37,23 +37,36 @@ body {
     color: rgb(8, 8, 57);
     font-size: 2rem;
     font-weight: 900;
-    margin: 1rem 0
+    margin: 1rem 0 0 0;
 }
 
 .flex-row {
     display: flex;
-    justify-content: start;
-    flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
+    width: 100%;
+    flex: 1;
 }
 
 button {
     background-color: rgb(89, 144, 179);
     color: white;
     border-radius: 5%;
-    padding: 0.5rem 1rem;
-    aspect-ratio: 16/9;
-    width: 100px
+    font-size: 1.5rem;
+    flex: 1;
+    max-height: 3.5rem;
+}
+
+.numPad,
+.operators {
+    gap: 1rem;
+    width: 50%;
+    justify-content: space-between;
+}
+
+.operators button {
+    height: 100%;
+    font-size: 2rem;
 }
 
 .footer {
@@ -61,4 +74,44 @@ button {
     width: 100%;
     color: white;
     padding: 0.5rem 0;
+}
+
+.row1 {
+    margin-top: 1rem;
+    justify-content: space-between;
+}
+
+.row2 {
+    margin: 1rem 0;
+    justify-content: space-between;
+}
+
+.screen {
+    background-color: gray;
+    width: 100%;
+    height: 100px;
+    border-radius: 2%;
+    justify-content: end;
+}
+
+.screen .text {
+    font-size: 2rem;
+    font-family: "Jersey 25", sans-serif;
+    padding-right: 1rem;
+    color: rgb(255, 255, 255);
+    text-shadow: 2px 2px 2px black;
+    margin-bottom: 1rem;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.left button,
+.right button {
+    width: 30%
 }
