@@ -65,25 +65,36 @@ function createOperators(numpadRow) {
 function getButton() {
     return document.createElement('button')
 }
-function displayScreen() {
-    const screenText = screen.firstElementChild
-    screen.classList.add('flex-col')
-    screenText.classList.add('right')
+function updateScreen(str) {
+    let screenText = screen.firstElementChild
+
+    if (!(['Clear', 'Back'].includes(str)) && screenText.textContent.length < 11) {
+        screenText.textContent += str
+    }
+    if (str === 'Back') {
+        screenText.textContent = screenText.textContent.slice(0, -1)
+    }
+    if (str === 'Clear') {
+        screenText.textContent = ''
+    }
+}
+function clickHandler(str) {
+    updateScreen(str)
 }
 function attachListeners(btnRow1, numPad, operators) {
     btnRow1.childNodes.forEach(btn => {
-        btn.addEventListener('click', (e) => console.log(e.target.textContent))
+        btn.addEventListener('click', () => clickHandler(btn.textContent))
     })
 
     numPad.childNodes.forEach(row => {
         row.childNodes.forEach(numBtn => {
-            numBtn.addEventListener('click', (e) => console.log('Num: ' + e.target.textContent))
+            numBtn.addEventListener('click', () => clickHandler(numBtn.textContent))
         })
     })
 
     operators.childNodes.forEach((row) => {
         row.childNodes.forEach(opBtn => {
-            opBtn.addEventListener('click', (e) => console.log(e.target.textContent))
+            opBtn.addEventListener('click', () => clickHandler(opBtn.textContent))
         })
     })
 }
@@ -105,16 +116,20 @@ function main() {
     const title = document.querySelector('.title')
     const row1 = document.querySelector('.row1')
     const row2 = document.querySelector('.row2')
+    const screenText = screen.firstElementChild
+
 
     //container.classList.add('')
+    screen.classList.add('flex-col')
+    screenText.classList.add('right')
     row1.classList.add('flex-row')
     title.classList.add('text-center')
     mainBody.classList.add('flex-col')
     footer.classList.add('text-center')
     body.classList.add('flex-col')
+
     const numPad = createNumpad(row2)
     const operators = createOperators(row2)
     attachListeners(row1, numPad, operators)
-    displayScreen()
 }
 main()
