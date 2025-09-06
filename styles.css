@@ -10,6 +10,7 @@ html {
 body {
     background-color: rgb(243, 243, 190);
     justify-content: space-between;
+    align-items: center;
 }
 
 .flex-col {
@@ -25,7 +26,7 @@ body {
 }
 
 .mainBody {
-    margin: 1rem 30%;
+    min-width: 25rem;
 }
 
 .text-center {
@@ -97,7 +98,7 @@ button {
 .screen .text {
     font-size: 2rem;
     font-family: "Jersey 25", sans-serif;
-    padding-right: 1rem;
+    padding: 0 1rem;
     color: rgb(255, 255, 255);
     text-shadow: 2px 2px 2px black;
     margin-bottom: 1rem;

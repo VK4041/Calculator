@@ -13,7 +13,7 @@ function reset() {
     num2 = ''
     operator = ''
     num1Flag = true
-    screenText.textContent = '0'
+    screenText.textContent = 'Start by typing or clicking'
     operatorPresentFlag = false
     resultDisplayedFlag = false
 }
@@ -55,14 +55,14 @@ function createOperators(numpadRow) {
     const operators = document.createElement('div')
     const opRows = Array.from({ length: 3 }, () => document.createElement('div'))
 
-    let opText = ['+', '-', 'x', '÷', '=']
-    let opBtns = Array.from({ length: 5 }, () => getButton())
+    let opText = ['+', '-', 'x', '÷', '.', '=']
+    let opBtns = Array.from({ length: 6 }, () => getButton())
     opBtns.forEach((btn, index) => {
         btn.textContent = opText[index]
     })
     let i = 0;
     let j = -1;
-    while (i < 5) {
+    while (i < 6) {
         if (i % 2 == 0) {
             opRows[++j].appendChild(opBtns[i++])
         }
@@ -74,7 +74,6 @@ function createOperators(numpadRow) {
         operators.appendChild(row)
         row.classList.add('flex-row')
     })
-    opRows[2].classList.add('right')
     numpadRow.appendChild(operators)
     operators.classList.add('flex-col', 'operators')
     return operators
@@ -107,34 +106,47 @@ function cropLast(element) {
     return element.slice(0, -1)
 }
 function clickHandler(btn) {
-
+    //Decimal input
+    if (btn === '.') {
+        //Check absence of (.) in num1
+        if (num1 && num1Flag && !(/[.]/.test(num1))) {
+            num1 += btn
+            screenText.textContent += btn
+            resultDisplayedFlag = false
+        }
+        else if (num2 && !num1Flag && !(/[.]/.test(num2))) {
+            num2 += btn
+            screenText.textContent += btn
+        }
+    }
     //Clear button
-    if (btn === 'Clear') {
+    else if (btn === 'Clear') {
         reset()
     }
-    if (btn === 'Back') {
+    //Back button
+    else if (btn === 'Back') {
         //Deleting from num1
         if (num1Flag && num1) {
             num1 = cropLast(num1)
         }
         //Deleting the operator
-        if (!num1Flag && !num2) {
+        else if (!num1Flag && !num2) {
             num1Flag = true
             operator = ''
             operatorPresentFlag = false
         }
         //Deleting from num2
-        if (!num1Flag && num2) {
+        else if (!num1Flag && num2) {
             num2 = cropLast(num2)
         }
         screenText.textContent = cropLast(screenText.textContent)
         resultDisplayedFlag = false
     }
     //If digits are clicked
-    if (/\d/.test(btn)) digitAppender(btn)
+    else if (/\d/.test(btn)) digitAppender(btn)
 
     //If any operator was clicked given only num1 is entered yet
-    if (/[\+\-x\÷]/.test(btn) && num1 && !num2) {
+    else if (!num2 && /[\+\-x\÷]/.test(btn) && num1) {
         num1Flag = false
         operator = btn
 
@@ -147,7 +159,7 @@ function clickHandler(btn) {
     }
 
     //If both num1 and num2 are entered and any operator is clicked, calculate
-    if (/[\+\-x\÷\=]/.test(btn) && num1 && num2) {
+    else if (/[\+\-x\÷\=]/.test(btn) && num1 && num2) {
         //Convert both variables to float
         num1 = parseFloat(num1)
         num2 = parseFloat(num2)
