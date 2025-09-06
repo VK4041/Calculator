@@ -103,13 +103,33 @@ function buttonListeners() {
     //For keyboard support
     window.addEventListener('keydown', (e) => console.log(e.key))
 }
+function cropLast(element) {
+    return element.slice(0, -1)
+}
 function clickHandler(btn) {
 
     //Clear button
     if (btn === 'Clear') {
         reset()
     }
-
+    if (btn === 'Back') {
+        //Deleting from num1
+        if (num1Flag && num1) {
+            num1 = cropLast(num1)
+        }
+        //Deleting the operator
+        if (!num1Flag && !num2) {
+            num1Flag = true
+            operator = ''
+            operatorPresentFlag = false
+        }
+        //Deleting from num2
+        if (!num1Flag && num2) {
+            num2 = cropLast(num2)
+        }
+        screenText.textContent = cropLast(screenText.textContent)
+        resultDisplayedFlag = false
+    }
     //If digits are clicked
     if (/\d/.test(btn)) digitAppender(btn)
 
@@ -117,11 +137,13 @@ function clickHandler(btn) {
     if (/[\+\-x\÷]/.test(btn) && num1 && !num2) {
         num1Flag = false
         operator = btn
-        if (operatorPresentFlag) screenText.textContent = screenText.textContent.slice(0, -1) + btn
+
+        if (operatorPresentFlag) screenText.textContent = cropLast(screenText.textContent) + btn
         else {
             screenText.textContent += btn
             operatorPresentFlag = true
         }
+        resultDisplayedFlag = false
     }
 
     //If both num1 and num2 are entered and any operator is clicked, calculate
@@ -144,10 +166,12 @@ function clickHandler(btn) {
             operator = btn
             nextOp = btn
         }
+        result = result.toString()
         num1 = result;
         num2 = ''
-        screenText.textContent = result.toString() + nextOp
+        screenText.textContent = result + nextOp
         resultDisplayedFlag = true
+        operatorPresentFlag = false
     }
 }
 function digitAppender(btn) {
