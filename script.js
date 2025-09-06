@@ -88,24 +88,30 @@ function operate(num1, num2, op) {
             break;
         case '-': result = subtract(num1, num2)
             break;
+        case '*':
         case 'x': result = multiply(num1, num2)
             break;
-        case '÷': result = divide(num1, num2)
+        case '÷':
+        case '/': result = divide(num1, num2)
     }
     return result
 }
 function buttonListeners() {
     const buttons = document.querySelectorAll('.container button')
     buttons.forEach(btn => {
-        btn.addEventListener('click', () => clickHandler(btn.textContent))
+        btn.addEventListener('click', () => eventHandler(btn.textContent))
     })
     //For keyboard support
-    window.addEventListener('keydown', (e) => console.log(e.key))
+    document.addEventListener('keydown', (e) => {
+        //First check eligible keys then only call handler
+        const legalKeys = /[0-9\e\b.+\-/x\*=]/
+        if (legalKeys.test(e.key) || e.key === 'Enter') eventHandler(e.key)
+    })
 }
 function cropLast(element) {
     return element.slice(0, -1)
 }
-function clickHandler(btn) {
+function eventHandler(btn) {
     //Decimal input
     if (btn === '.') {
         //Check absence of (.) in num1
@@ -120,11 +126,11 @@ function clickHandler(btn) {
         }
     }
     //Clear button
-    else if (btn === 'Clear') {
+    else if (btn === 'Clear' || btn === 'Escape') {
         reset()
     }
     //Back button
-    else if (btn === 'Back') {
+    else if (btn === 'Back' || btn === 'Backspace') {
         //Deleting from num1
         if (num1Flag && num1) {
             num1 = cropLast(num1)
@@ -146,7 +152,7 @@ function clickHandler(btn) {
     else if (/\d/.test(btn)) digitAppender(btn)
 
     //If any operator was clicked given only num1 is entered yet
-    else if (!num2 && /[\+\-x\÷]/.test(btn) && num1) {
+    else if (!num2 && /[+\-x÷*\/]/.test(btn) && num1) {
         num1Flag = false
         operator = btn
 
@@ -159,7 +165,7 @@ function clickHandler(btn) {
     }
 
     //If both num1 and num2 are entered and any operator is clicked, calculate
-    else if (/[\+\-x\÷\=]/.test(btn) && num1 && num2) {
+    else if ((/[+\-x÷=*\/]/.test(btn) || btn === 'Enter') && num1 && num2) {
         //Convert both variables to float
         num1 = parseFloat(num1)
         num2 = parseFloat(num2)
@@ -169,7 +175,7 @@ function clickHandler(btn) {
 
         //Check to display other operators upon initial calculation
         let nextOp;
-        if (btn === '=') {
+        if (btn === '=' || btn === 'Enter') {
             num1Flag = true
             operator = ''
             nextOp = ''
