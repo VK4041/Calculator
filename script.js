@@ -1,4 +1,10 @@
 const screen = document.querySelector('.screen')
+let screenText = screen.firstChild
+
+let num1 = ''
+let num2 = ''
+let operator = ''
+let num1Flag = true
 function createNumpad(numpadRow) {
     const numPad = document.createElement('div')
     const numRows = Array.from({ length: 4 }, () => document.createElement('div'));
@@ -41,7 +47,6 @@ function createOperators(numpadRow) {
     let opBtns = Array.from({ length: 5 }, () => getButton())
     opBtns.forEach((btn, index) => {
         btn.textContent = opText[index]
-        //btn.classList.add('btn')
     })
     let i = 0;
     let j = -1;
@@ -65,66 +70,69 @@ function createOperators(numpadRow) {
 function getButton() {
     return document.createElement('button')
 }
-function operate(num1, op, num2) {
-    let result;
-    num1 = parseInt(num1)
-    num2 = parseInt(num2)
-
+function operate(num1, num2, op) {
+    let result
     switch (op) {
         case '+': result = add(num1, num2)
             break;
-
         case '-': result = subtract(num1, num2)
             break;
-
         case 'x': result = multiply(num1, num2)
             break;
-
         case '÷': result = divide(num1, num2)
     }
-    return result.toString()
+    return result
 }
-function isSecondOperator(str, text) {
-    
-}
-function input(str) {
-    let screenText = screen.firstElementChild
-
-    if (!(['Clear', 'Back', '='].includes(str)) && screenText.textContent.length < 11) {
-        screenText.textContent += str
-    }
-    if (str === 'Back') {
-        screenText.textContent = screenText.textContent.slice(0, -1)
-    }
-    if (str === 'Clear') {
-        screenText.textContent = '';
-    }
-    if (str === '=' || isSecondOperator(str, screenText.textContent)) {
-        let op = Array.from(screenText.textContent).find(op => ['+', '-', 'x', '÷'].includes(op))
-        let nums = screenText.textContent.split(op)
-        console.log(op, nums[0], nums[1])
-        screenText.textContent = operate(nums[0], op, nums[1])
-    }
-}
-function clickHandler(str) {
-    input(str)
-}
-function attachListeners(btnRow1, numPad, operators) {
-    btnRow1.childNodes.forEach(btn => {
+function buttonListeners() {
+    const buttons = document.querySelectorAll('.container button')
+    buttons.forEach(btn => {
         btn.addEventListener('click', () => clickHandler(btn.textContent))
     })
+}
+function clickHandler(btn) {
 
-    numPad.childNodes.forEach(row => {
-        row.childNodes.forEach(numBtn => {
-            numBtn.addEventListener('click', () => clickHandler(numBtn.textContent))
-        })
-    })
+    //If digits are clicked
+    if (/\d/.test(btn)) digitAppender(btn)
 
-    operators.childNodes.forEach((row) => {
-        row.childNodes.forEach(opBtn => {
-            opBtn.addEventListener('click', () => clickHandler(opBtn.textContent))
-        })
-    })
+    //If operators are clicked given only num1 is entered yet
+    if (/[\+\-x\÷]/.test(btn) && num1 && !num2) {
+        num1Flag = false
+        operator = btn
+        screenText.textContent += btn
+        //console.log(`Operator: (${btn}) was clicked`)
+    }
+
+    //If both num1 and num2 are entered and any operator is clicked, calculate
+    if (/[\+\-x\÷\=]/.test(btn) && num1 && num2) {
+        //Convert both variables to integer
+        num1 = parseInt(num1)
+        num2 = parseInt(num2)
+        let result = operate(num1, num2, operator)
+
+        //Check to display other operators upon initial calculation
+        let nextOp = (btn !== '=') ? btn : ''
+
+        //console.log(`Result: ${num1} ${operator} ${num2} = ${result}`)
+
+        num1 = result
+        num2 = ''
+        operator = btn
+        screenText.textContent = result.toString() + nextOp
+    }
+}
+function digitAppender(btn) {
+    // If num1 flag is on and digits are entered: append to num1
+    if (num1Flag) {
+        num1 += btn
+        //console.log(`Num1: ${num1} & Num2: ${num2}`)
+        screenText.textContent = num1
+    }
+    //Num1 flag is off, so: append to num2 now
+    else {
+        num2 += btn
+        //console.log(`Num1: ${num1} & Num2: ${num2}`)
+        screenText.textContent += num2
+    }
 }
 const add = (num1, num2) => num1 + num2
 const subtract = (num1, num2) => num1 - num2
@@ -139,15 +147,11 @@ const divide = (num1, num2) => {
 function main() {
     const body = document.querySelector('body')
     const footer = document.querySelector('.footer')
-    const container = document.querySelector('.container')
     const mainBody = document.querySelector('.mainBody')
     const title = document.querySelector('.title')
     const row1 = document.querySelector('.row1')
     const row2 = document.querySelector('.row2')
-    const screenText = screen.firstElementChild
 
-
-    //container.classList.add('')
     screen.classList.add('flex-col')
     screenText.classList.add('right')
     row1.classList.add('flex-row')
@@ -158,6 +162,6 @@ function main() {
 
     const numPad = createNumpad(row2)
     const operators = createOperators(row2)
-    attachListeners(row1, numPad, operators)
+    buttonListeners()
 }
 main()
