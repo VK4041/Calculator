@@ -1,10 +1,22 @@
+//Global variables and flags
 const screen = document.querySelector('.screen')
 let screenText = screen.firstChild
+let num1
+let num2
+let operator
+let num1Flag
+let operatorPresentFlag
+let resultDisplayedFlag
 
-let num1 = ''
-let num2 = ''
-let operator = ''
-let num1Flag = true
+function reset() {
+    num1 = ''
+    num2 = ''
+    operator = ''
+    num1Flag = true
+    screenText.textContent = '0'
+    operatorPresentFlag = false
+    resultDisplayedFlag = false
+}
 function createNumpad(numpadRow) {
     const numPad = document.createElement('div')
     const numRows = Array.from({ length: 4 }, () => document.createElement('div'));
@@ -88,50 +100,67 @@ function buttonListeners() {
     buttons.forEach(btn => {
         btn.addEventListener('click', () => clickHandler(btn.textContent))
     })
+    //For keyboard support
+    window.addEventListener('keydown', (e) => console.log(e.key))
 }
 function clickHandler(btn) {
+
+    //Clear button
+    if (btn === 'Clear') {
+        reset()
+    }
 
     //If digits are clicked
     if (/\d/.test(btn)) digitAppender(btn)
 
-    //If operators are clicked given only num1 is entered yet
+    //If any operator was clicked given only num1 is entered yet
     if (/[\+\-x\÷]/.test(btn) && num1 && !num2) {
         num1Flag = false
         operator = btn
-        screenText.textContent += btn
-        //console.log(`Operator: (${btn}) was clicked`)
+        if (operatorPresentFlag) screenText.textContent = screenText.textContent.slice(0, -1) + btn
+        else {
+            screenText.textContent += btn
+            operatorPresentFlag = true
+        }
     }
 
     //If both num1 and num2 are entered and any operator is clicked, calculate
     if (/[\+\-x\÷\=]/.test(btn) && num1 && num2) {
-        //Convert both variables to integer
-        num1 = parseInt(num1)
-        num2 = parseInt(num2)
-        let result = operate(num1, num2, operator)
+        //Convert both variables to float
+        num1 = parseFloat(num1)
+        num2 = parseFloat(num2)
+
+        //Precise upto 2 decimal places
+        let result = divide(Math.round(multiply(operate(num1, num2, operator), 100)), 100)
 
         //Check to display other operators upon initial calculation
-        let nextOp = (btn !== '=') ? btn : ''
-
-        //console.log(`Result: ${num1} ${operator} ${num2} = ${result}`)
-
-        num1 = result
+        let nextOp;
+        if (btn === '=') {
+            num1Flag = true
+            operator = ''
+            nextOp = ''
+        }
+        else {
+            operator = btn
+            nextOp = btn
+        }
+        num1 = result;
         num2 = ''
-        operator = btn
         screenText.textContent = result.toString() + nextOp
+        resultDisplayedFlag = true
     }
 }
 function digitAppender(btn) {
     // If num1 flag is on and digits are entered: append to num1
     if (num1Flag) {
+        if (resultDisplayedFlag) reset() // User entered a number after a result was displayed, so reset
         num1 += btn
-        //console.log(`Num1: ${num1} & Num2: ${num2}`)
         screenText.textContent = num1
     }
     //Num1 flag is off, so: append to num2 now
     else {
         num2 += btn
-        //console.log(`Num1: ${num1} & Num2: ${num2}`)
-        screenText.textContent += num2
+        screenText.textContent += btn
     }
 }
 const add = (num1, num2) => num1 + num2
@@ -142,8 +171,10 @@ const divide = (num1, num2) => {
         alert('Error, division by zero')
         return 0
     }
-    return parseInt(num1 / num2)
+    return parseFloat(num1 / num2)
 }
+
+//Driver function
 function main() {
     const body = document.querySelector('body')
     const footer = document.querySelector('.footer')
@@ -162,6 +193,7 @@ function main() {
 
     const numPad = createNumpad(row2)
     const operators = createOperators(row2)
+    reset()
     buttonListeners()
 }
 main()
