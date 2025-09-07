@@ -106,7 +106,6 @@ function buttonListeners() {
         //First check eligible keys then only call handler
         const legalKeys = /^[0-9.+\-/x\*=]/
         if (legalKeys.test(e.key) || ['Enter', 'Escape', 'Backspace'].includes(e.key)) {
-            console.log(e.key)
             eventHandler(e.key)
         }
     })
