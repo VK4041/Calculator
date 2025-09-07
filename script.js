@@ -104,8 +104,11 @@ function buttonListeners() {
     //For keyboard support
     document.addEventListener('keydown', (e) => {
         //First check eligible keys then only call handler
-        const legalKeys = /[0-9\e\b.+\-/x\*=]/
-        if (legalKeys.test(e.key) || e.key === 'Enter') eventHandler(e.key)
+        const legalKeys = /^[0-9.+\-/x\*=]/
+        if (legalKeys.test(e.key) || ['Enter', 'Escape', 'Backspace'].includes(e.key)) {
+            console.log(e.key)
+            eventHandler(e.key)
+        }
     })
 }
 function cropLast(element) {
